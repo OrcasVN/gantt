@@ -35,7 +35,8 @@
 				end: '2018-10-08',
 				name: 'Redesign website',
 				id: "Task 0",
-				progress: 20
+				progress: 20,
+				expand: true
 			},
 			{
 				start: '2018-10-03',
@@ -43,7 +44,8 @@
 				name: 'Write new content',
 				id: "Task 1",
 				progress: 5,
-				dependencies: 'Task 0'
+				dependencies: 'Task 0',
+				expand: true
 			},
 			{
 				start: '2018-10-04',
@@ -51,7 +53,8 @@
 				name: 'Apply new styles',
 				id: "Task 2",
 				progress: 10,
-				dependencies: 'Task 1'
+				dependencies: 'Task 1',
+				expand: true
 			},
 			{
 				start: '2018-10-08',
@@ -59,7 +62,8 @@
 				name: 'Review',
 				id: "Task 3",
 				progress: 5,
-				dependencies: 'Task 2'
+				dependencies: 'Task 2',
+				expand: true
 			},
 			{
 				start: '2018-10-08',
@@ -67,7 +71,8 @@
 				name: 'Deploy',
 				id: "Task 4",
 				progress: 0,
-				dependencies: 'Task 2'
+				dependencies: 'Task 2',
+				expand: true
 			},
 			{
 				start: '2018-10-11',
@@ -76,15 +81,16 @@
 				id: "Task 5",
 				progress: 0,
 				dependencies: 'Task 4',
-				custom_class: 'bar-milestone'
+				custom_class: 'bar-milestone',
+				expand: true
 			},
-			{
-				start: '2014-01-05',
-				end: '2019-10-12',
-				name: 'Long term task',
-				id: "Task 6",
-				progress: 0
-			}
+			// {
+			// 	start: '2014-01-05',
+			// 	end: '2019-10-12',
+			// 	name: 'Long term task',
+			// 	id: "Task 6",
+			// 	progress: 0
+			// }
 		]
 		var gantt_chart = new Gantt(".gantt-target", tasks, {
 			on_click: task => {
@@ -99,7 +105,7 @@
 			on_view_change: (mode) => {
 				console.log(mode);
 			},
-			view_mode: 'Month',
+			view_mode: 'Day',
 			language: 'en'
 		});
 		console.log(gantt_chart);

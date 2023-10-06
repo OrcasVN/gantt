@@ -134,35 +134,73 @@ $handle-color: #ddd !default;
 }
 
 .gantt-container {
-	position: relative;
 	overflow: auto;
 	font-size: 12px;
+	display: flex;
 
-	.popup-wrapper {
-		position: absolute;
-		top: 0;
-		left: 0;
-		background: rgba(0, 0, 0, 0.8);
-		padding: 0;
-		color: #959da5;
-		border-radius: 3px;
+	.task-list {
 
-		.title {
-			border-bottom: 3px solid $blue;
-			padding: 10px;
+		table, th, td {
+			border: 1px solid $border-color;
+			border-collapse: collapse;
 		}
+		table {
+			border-spacing: 0px;
+			
+			thead {
+				background-color: #ffffff;
+				th {
+					width: auto;
+				}
+			}
 
-		.subtitle {
-			padding: 10px;
-			color: #dfe2e5;
+			tbody {
+				tr {
+					background-color: #ffffff;
+				}
+				tr:nth-child(even) {
+					background-color: $light-bg;
+				}
+				td {
+					text-overflow: ellipsis;
+				}
+			}
 		}
+	}
 
-		.pointer {
+	.task-list * {
+		box-sizing: border-box;
+	}
+
+	.gantt-content {
+		position: relative;
+		flex: 1;
+		.popup-wrapper {
 			position: absolute;
-			height: 5px;
-			margin: 0 0 0 -5px;
-			border: 5px solid transparent;
-			border-top-color: rgba(0, 0, 0, 0.8);
+			top: 0;
+			left: 0;
+			background: rgba(0, 0, 0, 0.8);
+			padding: 0;
+			color: #959da5;
+			border-radius: 3px;
+	
+			.title {
+				border-bottom: 3px solid $blue;
+				padding: 10px;
+			}
+	
+			.subtitle {
+				padding: 10px;
+				color: #dfe2e5;
+			}
+	
+			.pointer {
+				position: absolute;
+				height: 5px;
+				margin: 0 0 0 -5px;
+				border: 5px solid transparent;
+				border-top-color: rgba(0, 0, 0, 0.8);
+			}
 		}
 	}
 }

@@ -32,8 +32,8 @@ export default class Bar {
         this.width = this.gantt.options.column_width * this.duration;
         this.progress_width =
             this.gantt.options.column_width *
-                this.duration *
-                (this.task.progress / 100) || 0;
+            this.duration *
+            (this.task.progress / 100) || 0;
         this.group = createSVG('g', {
             class: 'bar-wrapper ' + (this.task.custom_class || ''),
             'data-id': this.task.id,
@@ -122,6 +122,8 @@ export default class Bar {
 
     draw_resize_handles() {
         if (this.invalid) return;
+
+        if (!this.gantt.draggable) return;
 
         const bar = this.$bar;
         const handle_width = 8;
