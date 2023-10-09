@@ -98,30 +98,26 @@ export default class Gantt {
             date_format: 'YYYY-MM-DD',
             popup_trigger: 'click',
             custom_popup_html: null,
-            draggable: false,
+            draggable: true,
+            show_task_list: true,
             language: 'en',
-            taskList: {
-                columns: [
-                    {
-                        id: 1,
-                        label: "ID",
-                        key: "id",
-                        width: 100
-                    },
-                    {
-                        id: 2,
-                        label: "Description",
-                        key: "name",
-                        width: 200,
-                    },
-                    {
-                        id: 4,
-                        label: "Start",
-                        key: "start",
-                        width: 100,
-                    },
-                ]
-            }
+            display_columns: [
+                {
+                    header: 'ID',
+                    propertyName: 'id',
+                    width: 100,
+                },
+                {
+                    header: 'Name',
+                    propertyName: 'name',
+                    width: 200,
+                },
+                {
+                    header: 'Start',
+                    propertyName: 'start',
+                    width: 100,
+                },
+            ],
         };
         this.options = Object.assign({}, default_options, options);
     }
@@ -178,6 +174,11 @@ export default class Gantt {
                         .filter((d) => d);
                 }
                 task.dependencies = deps;
+            }
+
+            // indentLevel
+            if (typeof task.indentLevel !== 'number') {
+                task.indentLevel = Number(task.indentLevel) || 0;
             }
 
             // uids
@@ -330,8 +331,11 @@ export default class Gantt {
     }
     make_task_list() {
         this.task_list_width = 0
-        const task_list = new TaskList(this, this.tasks, this.options.taskList.columns)
-        this.task_list_width = task_list.task_list_width;
+
+        if (this.options.show_task_list) {
+            const task_list = new TaskList(this, this.tasks, this.options.display_columns)
+            this.task_list_width = task_list.task_list_width;
+        }
     }
 
     make_grid() {
@@ -967,6 +971,7 @@ export default class Gantt {
      */
     clear() {
         this.$svg.innerHTML = '';
+        this.task_list.innerHTML = '';
     }
 }
 

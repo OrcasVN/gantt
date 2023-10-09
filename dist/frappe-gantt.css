@@ -129,6 +129,24 @@
 .gantt-container .task-list table tbody td {
   text-overflow: ellipsis;
 }
+.gantt-container .task-list table td {
+  padding: 8px;
+  overflow: hidden;
+  text-wrap: nowrap;
+}
+.gantt-container .task-list .column-container {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.gantt-container .task-list .column-container .frappe-gantt__expander {
+  padding: 0px 5px;
+  cursor: pointer;
+  background: #979393;
+  font-size: 14px;
+  border-radius: 2px;
+  padding-bottom: 2px;
+}
 .gantt-container .task-list * {
   box-sizing: border-box;
 }

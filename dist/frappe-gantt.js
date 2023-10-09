@@ -489,7 +489,7 @@ var Gantt = (function () {
         draw_resize_handles() {
             if (this.invalid) return;
 
-            if (!this.gantt.draggable) return;
+            if (!this.gantt.options.draggable) return;
 
             const bar = this.$bar;
             const handle_width = 8;
@@ -958,46 +958,92 @@ var Gantt = (function () {
         }
 
         render_task_list() {
-            console.log(this.gantt.$container);
+            this.make_table();
 
-            var tbl = document.createElement('table');
-            tbl.style.width = '100%';
+            this.make_table_header();
+            this.make_table_content();
+        }
 
-            const tHead = document.createElement('thead');
-            tHead.style.height = this.gantt.options.header_height + 9 + 'px';
+        make_table() {
+            // create table
+            var table = document.createElement('table');
+            table.style.width = '100%';
+
+            // create thead
+            const thead = document.createElement('thead');
+            thead.style.height = this.gantt.options.header_height + 9 + 'px';
+            table.appendChild(thead);
+
+            // create tbody
+            const tbody = document.createElement('tbody');
+            table.appendChild(tbody);
+
+            this.gantt.task_list.appendChild(table);
+
+            this.thead = thead;
+            this.tbody = tbody;
+        }
+
+        make_table_header() {
             const tr = document.createElement('tr');
 
             for (let c of this.columns) {
                 var th = document.createElement('th');
-                th.textContent = c.label;
+                th.textContent = c.header;
                 th.style.width = c.width + 'px';
                 tr.appendChild(th);
             }
 
-            tHead.appendChild(tr);
-            tbl.appendChild(tHead);
-            var tbdy = document.createElement('tbody');
+            this.thead.appendChild(tr);
+        }
 
-            for (var i = 0; i < this.tasks.length; i++) {
-                const isDisplayed = this.gantt.get_all_dependent_tasks(this.tasks[i].id).every(id => this.tasks.find(t => t.id === id).expand);
-                if (!isDisplayed) {
-                    break;
-                }
+        make_table_content() {
+            for (let i = 0; i < this.tasks.length; i++) {
+
                 const tr = document.createElement('tr');
                 tr.style.height = this.gantt.options.bar_height + this.gantt.options.padding + 'px';
                 for (let c of this.columns) {
-                    var td = document.createElement('td');
+                    const td = document.createElement('td');
+                    const column = this.make_column(this.tasks[i], c);
 
-                    td.textContent = typeof c.key === 'string' ? this.tasks[i][c.key] : c.key(this.tasks[i]);
-
+                    td.appendChild(column);
                     tr.appendChild(td);
                 }
 
-                tbdy.appendChild(tr);
+                this.tbody.appendChild(tr);
             }
-            tbl.appendChild(tbdy);
 
-            this.gantt.task_list.appendChild(tbl);
+        }
+
+        make_column(task, column) {
+            const container = document.createElement('div');
+
+            if (column.allowIndentLevel) {
+                container.style.paddingLeft = 12 * task.indentLevel + 'px';
+            }
+
+            if (column.custom_html && typeof column.custom_html === 'function') {
+                const html = column.custom_html(task, column);
+
+                if (html) {
+                    container.innerHTML = html;
+
+                    // bind events
+                    if (column.events && Array.isArray(column.events)) {
+                        column.events.forEach(event => {
+                            $.on(container, event.type, event.target, (ev) => {
+                                event.handler(task, column);
+                            });
+                        });
+                    }
+
+                }
+            } else {
+                container.innerHTML = `<div class="task-list-content-wrapper">
+                                        <div>${task[column.propertyName]}</div>
+                                    </div>`;
+            }
+            return container
         }
     }
 
@@ -1092,30 +1138,26 @@ var Gantt = (function () {
                 date_format: 'YYYY-MM-DD',
                 popup_trigger: 'click',
                 custom_popup_html: null,
-                draggable: false,
+                draggable: true,
+                show_task_list: true,
                 language: 'en',
-                taskList: {
-                    columns: [
-                        {
-                            id: 1,
-                            label: "ID",
-                            key: "id",
-                            width: 100
-                        },
-                        {
-                            id: 2,
-                            label: "Description",
-                            key: "name",
-                            width: 200,
-                        },
-                        {
-                            id: 4,
-                            label: "Start",
-                            key: "start",
-                            width: 100,
-                        },
-                    ]
-                }
+                display_columns: [
+                    {
+                        header: 'ID',
+                        propertyName: 'id',
+                        width: 100,
+                    },
+                    {
+                        header: 'Name',
+                        propertyName: 'name',
+                        width: 200,
+                    },
+                    {
+                        header: 'Start',
+                        propertyName: 'start',
+                        width: 100,
+                    },
+                ],
             };
             this.options = Object.assign({}, default_options, options);
         }
@@ -1172,6 +1214,11 @@ var Gantt = (function () {
                             .filter((d) => d);
                     }
                     task.dependencies = deps;
+                }
+
+                // indentLevel
+                if (typeof task.indentLevel !== 'number') {
+                    task.indentLevel = Number(task.indentLevel) || 0;
                 }
 
                 // uids
@@ -1324,8 +1371,11 @@ var Gantt = (function () {
         }
         make_task_list() {
             this.task_list_width = 0;
-            const task_list = new TaskList(this, this.tasks, this.options.taskList.columns);
-            this.task_list_width = task_list.task_list_width;
+
+            if (this.options.show_task_list) {
+                const task_list = new TaskList(this, this.tasks, this.options.display_columns);
+                this.task_list_width = task_list.task_list_width;
+            }
         }
 
         make_grid() {
@@ -1961,6 +2011,7 @@ var Gantt = (function () {
          */
         clear() {
             this.$svg.innerHTML = '';
+            this.task_list.innerHTML = '';
         }
     }
 

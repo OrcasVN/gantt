@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 	<meta charset="UTF-8">
 	<title>Simple Gantt</title>
@@ -8,14 +9,17 @@
 			font-family: sans-serif;
 			background: #ccc;
 		}
+
 		.container {
 			width: 80%;
 			margin: 0 auto;
 		}
+
 		/* custom class */
 		.gantt .bar-milestone .bar {
 			fill: tomato;
 		}
+
 		.heading {
 			text-align: center;
 		}
@@ -23,6 +27,7 @@
 	<link rel="stylesheet" href="dist/frappe-gantt.css" />
 	<script src="dist/frappe-gantt.js"></script>
 </head>
+
 <body>
 	<div class="container">
 		<h2 class="heading">Interactive Gantt Chart entirely made in SVG!</h2>
@@ -33,66 +38,146 @@
 			{
 				start: '2018-10-01',
 				end: '2018-10-08',
-				name: 'Redesign website',
-				id: "Task 0",
+				name: 'Parent 1',
+				id: "Task",
 				progress: 20,
-				expand: true
+				children: [
+					{
+						start: '2018-10-01',
+						end: '2018-10-08',
+						name: 'Child 1',
+						id: "task_child_1",
+						// indentLevel: 1,
+						progress: 20,
+						children: [
+							{
+								start: '2018-10-01',
+								end: '2018-10-08',
+								name: 'Redesign website',
+								id: "Task 0",
+								// indentLevel: 2,
+								progress: 20,
+								children: [
+									{
+										start: '2018-10-03',
+										end: '2018-10-06',
+										name: 'Write new content',
+										id: "Task 1",
+										// indentLevel: 3,
+										progress: 5,
+									},
+									{
+										start: '2018-10-04',
+										end: '2018-10-08',
+										name: 'Apply new styles',
+										id: "Task 2",
+										// indentLevel: 3,
+										progress: 10,
+										dependencies: 'Task 1',
+									},
+									{
+										start: '2018-10-08',
+										end: '2018-10-09',
+										name: 'Review',
+										id: "Task 3",
+										// indentLevel: 3,
+										progress: 5,
+										dependencies: 'Task 2',
+									},
+									{
+										start: '2018-10-08',
+										end: '2018-10-10',
+										name: 'Deploy',
+										id: "Task 4",
+										// indentLevel: 3,
+										progress: 0,
+										dependencies: 'Task 2',
+									},
+									{
+										start: '2018-10-11',
+										end: '2018-10-11',
+										name: 'Go Live!',
+										id: "Task 5",
+										progress: 0,
+										// indentLevel: 3,
+										dependencies: 'Task 4',
+										custom_class: 'bar-milestone',
+										children: [
+
+										]
+									},
+								]
+							},
+
+						]
+					},
+					{
+						start: '2018-10-01',
+						end: '2018-10-08',
+						name: 'Child 2',
+						id: "task_child_2",
+						indentLevel: 1,
+						progress: 20,
+						dependencies: 'task_child_1',
+						children: [
+							{
+								start: '2018-10-07',
+								end: '2018-10-08',
+								name: 'Child Child 1',
+								id: "task_child_child_1",
+								// indentLevel: 2,
+								progress: 20,
+							},
+							{
+								start: '2018-10-07',
+								end: '2018-10-08',
+								name: 'Child Child 2',
+								id: "task_child_child_2",
+								// indentLevel: 2,
+								progress: 20,
+								dependencies: 'task_child_child_1'
+							},
+						]
+					},
+				]
 			},
-			{
-				start: '2018-10-03',
-				end: '2018-10-06',
-				name: 'Write new content',
-				id: "Task 1",
-				progress: 5,
-				dependencies: 'Task 0',
-				expand: true
-			},
-			{
-				start: '2018-10-04',
-				end: '2018-10-08',
-				name: 'Apply new styles',
-				id: "Task 2",
-				progress: 10,
-				dependencies: 'Task 1',
-				expand: true
-			},
-			{
-				start: '2018-10-08',
-				end: '2018-10-09',
-				name: 'Review',
-				id: "Task 3",
-				progress: 5,
-				dependencies: 'Task 2',
-				expand: true
-			},
-			{
-				start: '2018-10-08',
-				end: '2018-10-10',
-				name: 'Deploy',
-				id: "Task 4",
-				progress: 0,
-				dependencies: 'Task 2',
-				expand: true
-			},
-			{
-				start: '2018-10-11',
-				end: '2018-10-11',
-				name: 'Go Live!',
-				id: "Task 5",
-				progress: 0,
-				dependencies: 'Task 4',
-				custom_class: 'bar-milestone',
-				expand: true
-			},
-			// {
-			// 	start: '2014-01-05',
-			// 	end: '2019-10-12',
-			// 	name: 'Long term task',
-			// 	id: "Task 6",
-			// 	progress: 0
-			// }
+
 		]
-		var gantt_chart = new Gantt(".gantt-target", tasks, {
+
+		const getAllChildren = (task) => {
+
+			const getChildren = (task, indentLevel) => {
+				task.indentLevel = indentLevel;
+
+				if (!task.children || task.children.length === 0) return [task]
+
+				return [
+					task,
+					...task.children.reduce((acc, cur) => {
+						cur.indentLevel = indentLevel + 1
+
+						if (!cur.expand) return [...acc, cur];
+
+						return acc.concat(getChildren(cur, indentLevel + 1))
+					}, [])
+				]
+			}
+
+			return getChildren(task, task.indentLevel).slice(1)
+		}
+
+		const initialGanttTasks = () => {
+			const cloneTasks = JSON.parse(JSON.stringify(tasks))
+
+			return cloneTasks.map(t => ({
+				...t,
+				indentLevel: 0
+			}))
+		}
+
+		let ganttTasks = initialGanttTasks()
+
+		var gantt_chart = new Gantt(".gantt-target", ganttTasks, {
 			on_click: task => {
 				console.log(task);
 			},
@@ -103,12 +188,95 @@
 				console.log(task, progress);
 			},
 			on_view_change: (mode) => {
-				console.log(mode);
+				// console.log(mode);
 			},
+			// on_expand: (task, expand) => {
+			// 	const curTaskIdx = ganttTasks.findIndex(t => t.id === task.id)
+			// 	ganttTasks[curTaskIdx].expand = expand
+
+			// 	const children = getAllChildren(ganttTasks[curTaskIdx])
+
+			// 	if (expand) {
+			// 		ganttTasks.splice(curTaskIdx + 1, 0, ...children)
+			// 	} else {
+			// 		children.forEach(c => {
+			// 			const idx = ganttTasks.findIndex(t => t.id === c.id)
+			// 			if (idx >= 0) {
+			// 				ganttTasks.splice(idx, 1)
+			// 			}
+			// 		})
+			// 	}
+
+			// 	console.log(ganttTasks)
+			// 	gantt_chart.refresh(ganttTasks)
+			// },
+			bar_height: 30,
 			view_mode: 'Day',
-			language: 'en'
+			language: 'en',
+			draggable: false,
+			display_columns: [
+				{
+					header: 'Id',
+					propertyName: 'id',
+					width: 100,
+					allowIndentLevel: true,
+					custom_html: (task, column) => {
+
+						return `
+						<div class="column-container">
+							${task.children?.length > 0 ? `<div class="frappe-gantt__expander">
+								<svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 320 512"><path d="M182.6 470.6c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-9.2-9.2-11.9-22.9-6.9-34.9s16.6-19.8 29.6-19.8H288c12.9 0 24.6 7.8 29.6 19.8s2.2 25.7-6.9 34.9l-128 128z"/></svg>
+							</div>` : ''}
+							<div>${task.name}</div>
+						</div>
+						`
+					},
+					events: [
+						{
+							target: '.frappe-gantt__expander',
+							type: 'click',
+							handler: (task) => {
+								const curTaskIdx = ganttTasks.findIndex(t => t.id === task.id)
+								ganttTasks[curTaskIdx].expand = !task.expand
+
+								const children = getAllChildren(ganttTasks[curTaskIdx])
+
+								if (ganttTasks[curTaskIdx].expand) {
+									ganttTasks.splice(curTaskIdx + 1, 0, ...children)
+								} else {
+									children.forEach(c => {
+										const idx = ganttTasks.findIndex(t => t.id === c.id)
+										if (idx >= 0) {
+											ganttTasks.splice(idx, 1)
+										}
+									})
+								}
+
+								gantt_chart.refresh(ganttTasks)
+							}
+						}
+					]
+				},
+				{
+					header: 'Name',
+					propertyName: 'name',
+					width: 100,
+					custom_html: (task) => {
+
+						return `
+						<div class="column-name" style="color:blue">
+							<div>${task.name}</div>
+						</div>
+						`
+					}
+				},
+			]
+		
 		});
+
+
 		console.log(gantt_chart);
 	</script>
 </body>
+
 </html>

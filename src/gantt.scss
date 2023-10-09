@@ -139,7 +139,6 @@ $handle-color: #ddd !default;
 	display: flex;
 
 	.task-list {
-
 		table, th, td {
 			border: 1px solid $border-color;
 			border-collapse: collapse;
@@ -164,6 +163,27 @@ $handle-color: #ddd !default;
 				td {
 					text-overflow: ellipsis;
 				}
+			}
+
+			td {
+				padding: 8px;
+				overflow: hidden;
+				text-wrap: nowrap;
+			}
+		}
+
+		.column-container {
+			display: flex;
+			align-items: center;
+			gap: 4px;
+
+			.frappe-gantt__expander{
+				padding: 0px 5px;
+				cursor: pointer;
+				background: #979393;
+				font-size: 14px;
+				border-radius: 2px;
+				padding-bottom: 2px;
 			}
 		}
 	}
