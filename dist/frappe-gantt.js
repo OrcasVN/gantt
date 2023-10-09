@@ -1018,6 +1018,10 @@ var Gantt = (function () {
         make_column(task, column) {
             const container = document.createElement('div');
 
+            if (column.custom_class) {
+                container.className = container.className ? `${container.className} ${column.custom_class}` : column.custom_class;
+            }
+
             if (column.allowIndentLevel) {
                 container.style.paddingLeft = 12 * task.indentLevel + 'px';
             }
