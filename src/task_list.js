@@ -92,7 +92,7 @@ export default class TaskList {
                 if (column.events && Array.isArray(column.events)) {
                     column.events.forEach(event => {
                         $.on(container, event.type, event.target, (ev) => {
-                            event.handler(task, column)
+                            event.handler(task, column, this.tasks)
                         })
                     });
                 }
