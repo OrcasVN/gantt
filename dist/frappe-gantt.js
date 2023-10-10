@@ -1143,7 +1143,7 @@ var Gantt = (function () {
                 popup_trigger: 'click',
                 custom_popup_html: null,
                 draggable: true,
-                show_task_list: true,
+                show_task_list: false,
                 language: 'en',
                 display_columns: [
                     {
@@ -1300,6 +1300,12 @@ var Gantt = (function () {
                     this.gantt_end = task._end;
                 }
             }
+
+            if (!this.gantt_start)
+                this.gantt_start = new Date();
+            if (!this.gantt_end)
+                this.gantt_end = new Date();
+
 
             this.gantt_start = date_utils.start_of(this.gantt_start, 'day');
             this.gantt_end = date_utils.start_of(this.gantt_end, 'day');

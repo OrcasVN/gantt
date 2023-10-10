@@ -177,7 +177,7 @@
 
 		let ganttTasks = initialGanttTasks()
 
-		var gantt_chart = new Gantt(".gantt-target", ganttTasks, {
+		var gantt_chart = new Gantt(".gantt-target", [], {
 			on_click: task => {
 				console.log(task);
 			},
