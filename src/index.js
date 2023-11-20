@@ -370,7 +370,7 @@ export default class Gantt {
         });
 
         $.attr(this.$svg, {
-            height: grid_height + this.options.padding + 100,
+            height: grid_height + this.options.padding - 16,
             width: '100%',
         });
     }
