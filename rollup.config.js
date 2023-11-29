@@ -7,7 +7,7 @@ const dev = {
         name: 'Gantt',
         file: 'dist/frappe-gantt.js',
         sourcemap: true,
-        format: 'iife',
+        format: 'cjs',
     },
     plugins: [
         sass({
@@ -21,7 +21,7 @@ const prod = {
         name: 'Gantt',
         file: 'dist/frappe-gantt.min.js',
         sourcemap: true,
-        format: 'iife',
+        format: 'cjs',
     },
     plugins: [
         sass({
